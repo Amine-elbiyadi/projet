@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <time.h>
 
+char* nomFil[50];
 typedef struct {
     int day ;
     int month ; 
@@ -30,18 +31,19 @@ typedef struct {
     Filiere * filiere ;
 }Ecole;
 
-typedef struct Etudaint{
+typedef struct Etudiant{
     char nom[50];
     char prenom[50];
     int age ;
     int ID;
     DateNaissance DT ;
     Filiere *filiere ;
-    struct Etudaint *next ;
-}Etudaint; 
+    struct Etudiant *next ;
+}Etudiant; 
 
 typedef struct list{
-    Etudaint* head;
+    Etudiant* head;
+    Etudiant* tail ;
 }list;
 
 bool CheckAje(DateNaissance date , int age ){
@@ -61,13 +63,21 @@ bool CheckAje(DateNaissance date , int age ){
         return false ; 
     }
 }
-bool chekckID (){
 
+bool chekckID (Etudiant *etu){
+    int i = 0; 
+    while(nomFil[i]!= "\0"){
+        if (recherchEtfID(etu,nomFil[i])){
+            return true ;
+        }
+        i++;
+    }
+    return false ;
 }
-// la creation d un seulle etudaint 
-Etudaint* creeEt(int nbrEtu ){
-    Etudaint* etu ;
-    etu = malloc(sizeof (Etudaint));
+// la creation d un seulle etudiant 
+Etudiant* creeEt(int nbrEtu ){
+    Etudiant* etu ;
+    etu = malloc(sizeof (Etudiant));
     if (etu == NULL ){
         printf ("Memory allocation failed!\n");
         return NULL;
@@ -114,12 +124,12 @@ Etudaint* creeEt(int nbrEtu ){
     etu->next = NULL;
     return etu ;
 }
-// la creation d une liste des etudaints
+// la creation d une liste des etudiants
 void creatlist(list * list ,int nbrEt){
     if(nbrEt == 0 ){
         return ;
     }
-    Etudaint * tmp ;
+    Etudiant * tmp ;
     list->head = tmp = creeEt(1);
     for (int i = 1 ; i < nbrEt ; i++ ){
         tmp->next = creeEt(i);
@@ -127,11 +137,10 @@ void creatlist(list * list ,int nbrEt){
     }
 
 }
-//recher d un etudaint dans un file
-bool recherchEtfNOM(Etudaint *etu,char * nomFil){
-    Etudaint et;
+//recher d un etudiant dans un file
+bool recherchEtfNOM(Etudiant *etu,char * nomFil){
+    Etudiant et;
     FILE * P ;
-    // to minuscule
     P = fopen(nomFil,"r+");
     while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et.ID,et.nom,et.prenom,et.age, et.DT.day,et.DT.month,et.DT.year,et.filiere->nomFi)==8){
         if (strcasecmp(et.nom,etu->nom) && strcasecmp(et.prenom,etu->prenom)){
@@ -142,11 +151,10 @@ bool recherchEtfNOM(Etudaint *etu,char * nomFil){
     }
     return false;
 }
-//recherch pqr id 
-bool recherchEtfID(Etudaint *etu,char * nomFil){
-    Etudaint et;
+//recherch par id 
+bool recherchEtfID(Etudiant *etu,char * nomFil){
+    Etudiant et;
     FILE * P ;
-    // to minuscule
     P = fopen(nomFil,"r+");
     while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et.ID,et.nom,et.prenom,et.age, et.DT.day,et.DT.month,et.DT.year,et.filiere->nomFi)==8){
         if (et.ID==etu->ID){
@@ -159,7 +167,43 @@ bool recherchEtfID(Etudaint *etu,char * nomFil){
 }
 
 
+list* creeList( ){
+    list *list;
+    list->head=NULL;
+    list->tail=NULL;
+    return list;
+}
+
+list * ajoterList( list * list, Etudiant etudiant){
+    
+    if (list->head == NULL){
+        list->head = &etudiant;
+        list->tail = &etudiant;
+        return list ;
+    }
+    list->tail->next = &etudiant;
+    list->tail = &etudiant;
+    return list ;
+} 
+
+Etudiant* recherchEtfAge(int * age ){
+    Etudiant *et;
+    FILE * P ;
+    int i = 0;
+    while(nomFil[i]!= "\0" ){
+        P = fopen(nomFil[i],"r+");
+        while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et->ID,et->nom,et->prenom,et->age, et->DT.day,et->DT.month,et->DT.year,et->filiere->nomFi)==8){
+            if (age == et->age){
+                 = &et;
+                return true ;
+            }
+        }
+        i++;
+    }
+    return false;
+}
+
 int main (){
-    Etudaint* etu ;
+    Etudiant* etu ;
     etu = creeEt(1);
 }                                                                                                                                                         

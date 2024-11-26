@@ -195,7 +195,6 @@ list* recherchEtfAge(int * age ){
         while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et->ID,et->nom,et->prenom,et->age, et->DT.day,et->DT.month,et->DT.year,et->filiere->nomFi)==8){
             if (age == et->age){
                 list = ajouterList( list ,et);
-                return list ;
             }
         }
         i++;

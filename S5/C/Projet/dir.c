@@ -174,33 +174,33 @@ list* creeList( ){
     return list;
 }
 
-list * ajoterList( list * list, Etudiant etudiant){
-    
+list * ajoterList( list * list, Etudiant *etudiant){
     if (list->head == NULL){
-        list->head = &etudiant;
-        list->tail = &etudiant;
+        list->head = etudiant;
+        list->tail = etudiant;
         return list ;
     }
-    list->tail->next = &etudiant;
-    list->tail = &etudiant;
+    list->tail->next = etudiant;
+    list->tail = etudiant;
     return list ;
 } 
 
-Etudiant* recherchEtfAge(int * age ){
+list* recherchEtfAge(int * age ){
     Etudiant *et;
+    list * list = creeList();
     FILE * P ;
     int i = 0;
     while(nomFil[i]!= "\0" ){
         P = fopen(nomFil[i],"r+");
         while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et->ID,et->nom,et->prenom,et->age, et->DT.day,et->DT.month,et->DT.year,et->filiere->nomFi)==8){
             if (age == et->age){
-                 = &et;
-                return true ;
+                list = ajouterList( list ,et);
+                return list ;
             }
         }
         i++;
     }
-    return false;
+    return list ;
 }
 
 int main (){

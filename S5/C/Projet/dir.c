@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <time.h>
 
+
 char* nomFil[50];
 typedef struct {
     int day ;
@@ -37,7 +38,7 @@ typedef struct Etudiant{
     int age ;
     int ID;
     DateNaissance DT ;
-    Filiere *filiere ;
+    Filiere filiere ;
     struct Etudiant *next ;
 }Etudiant; 
 
@@ -46,7 +47,60 @@ typedef struct list{
     Etudiant* tail ;
 }list;
 
-bool CheckAje(DateNaissance date , int age ){
+Ecole ecole ;
+
+int positionInt ( int inte , int taille){
+    return inte % taille;
+}
+
+int positionstring ( char * text ){
+    char y = tolower(text[0]);
+    return y -'a';
+}
+
+Etudiant** inithash(Etudiant** table ,int taille){
+    for(int j = 0 ; j < taille ; j++){
+        table[j]=NULL;
+    }
+    return table;
+}
+Etudiant** hashAge(){
+    int taille = 11 , index ;
+    FILE * file;
+    Etudiant* Age[taille];
+    Etudiant* tmp1[taille];
+    Etudiant tmp ;
+    char ligne[100];
+
+    inithash(Age,taille);
+    inithash(tmp1,taille);
+    for(int i = 0 ; i < ecole.nbrFi ; i++ ){
+        file = fopen(ecole.filiere[i].nomFi,"r+");
+        if(file==NULL){ 
+            printf("Erreur lors de l'ouvrage de fichier !!");
+            return NULL;
+        }
+        fgets(ligne,sizeof(ligne),file);
+        while (fscanf(file,"%d,%s,%s,%d,%d-%d-%d",tmp.ID,tmp.nom,tmp.prenom,tmp.age, tmp.DT.day,tmp.DT.month,tmp.DT.year)==7){
+            strcpy(ecole.filiere[i].nomFi,tmp.filiere.nomFi );
+            index = positionInt(tmp.age,taille);
+            if(Age[index]==NULL){
+                Age[index]=&tmp;
+                tmp1[index]=&tmp;
+                tmp.next = NULL;
+            }
+            else{
+                tmp1[index]->next=&tmp;
+                tmp1[index]=&tmp;
+                tmp.next = NULL;
+            }
+        }
+        fclose(file);
+    }
+    return Age;
+} 
+
+bool CheckAge(DateNaissance date , int age ){
     int age1 ;
     time_t t;
     struct tm *currentTime;
@@ -119,8 +173,8 @@ Etudiant* creeEt(int nbrEtu ){
         scanf("%d",&etu->age);
     }
     printf("donner le nom de filiere dans la quelle l etudiant %d :",nbrEtu);
-    fgets(etu->filiere->nomFi,sizeof(etu->filiere->nomFi),stdin);
-    etu->filiere->nomFi[strcspn(etu->filiere->nomFi, "\n")] = '\0';
+    fgets(etu->filiere.nomFi,sizeof(etu->filiere.nomFi),stdin);
+    etu->filiere.nomFi[strcspn(etu->filiere.nomFi, "\n")] = '\0';
     etu->next = NULL;
     return etu ;
 }
@@ -142,7 +196,7 @@ bool recherchEtfNOM(Etudiant *etu,char * nomFil){
     Etudiant et;
     FILE * P ;
     P = fopen(nomFil,"r+");
-    while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et.ID,et.nom,et.prenom,et.age, et.DT.day,et.DT.month,et.DT.year,et.filiere->nomFi)==8){
+    while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et.ID,et.nom,et.prenom,et.age, et.DT.day,et.DT.month,et.DT.year,et.filiere.nomFi)==8){
         if (strcasecmp(et.nom,etu->nom) && strcasecmp(et.prenom,etu->prenom)){
             printf ("l'etudiant %s %s est trouve dans cette filiere !!",etu->nom,etu->prenom);
             etu = &et;
@@ -156,7 +210,7 @@ bool recherchEtfID(Etudiant *etu,char * nomFil){
     Etudiant et;
     FILE * P ;
     P = fopen(nomFil,"r+");
-    while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et.ID,et.nom,et.prenom,et.age, et.DT.day,et.DT.month,et.DT.year,et.filiere->nomFi)==8){
+    while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et.ID,et.nom,et.prenom,et.age, et.DT.day,et.DT.month,et.DT.year,et.filiere.nomFi)==8){
         if (et.ID==etu->ID){
             printf ("l'etudiant de l'id : %d est trouve dans cette filiere !!",etu->ID);
             etu = &et;
@@ -185,14 +239,15 @@ list * ajoterList( list * list, Etudiant *etudiant){
     return list ;
 } 
 
-list* recherchEtfAge(int * age ){
-    Etudiant *et;
+list* recherchEtfAge(int age){
+    Etudiant ** tableau;
+    tableau = hashAge();
+    int index =positionInt(age,11); 
     list * list = creeList();
-    FILE * P ;
     int i = 0;
     while(nomFil[i]!= "\0" ){
         P = fopen(nomFil[i],"r+");
-        while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et->ID,et->nom,et->prenom,et->age, et->DT.day,et->DT.month,et->DT.year,et->filiere->nomFi)==8){
+        while (fscanf(P,"%d ,%s,%s,%d,%d-%d-%d,%s",et->ID,et->nom,et->prenom,et->age, et->DT.day,et->DT.month,et->DT.year,et->filiere.nomFi)==8){
             if (age == et->age){
                 list = ajouterList( list ,et);
             }
